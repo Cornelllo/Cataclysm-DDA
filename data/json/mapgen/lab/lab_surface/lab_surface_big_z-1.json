@@ -174,8 +174,7 @@
         "*": "t_thconc_floor_olight",
         "e": "t_elevator",
         "m": "t_door_metal_c",
-        "w": "t_gates_control_brick",
-        "x": "t_console_broken"
+        "w": "t_gates_control_brick"
       },
       "furniture": {
         "&": "f_trashcan",
@@ -186,18 +185,19 @@
         "f": "f_fridge",
         "l": "f_locker",
         "s": "f_stool",
-        "U": "f_utility_shelf"
+        "U": "f_utility_shelf",
+        "x": "f_console_broken"
       },
       "items": {
         "d": { "item": "office", "chance": 60, "repeat": [ 2, 6 ] },
         "f": [
-          { "item": "fridge", "chance": 60, "repeat": [ 2, 10 ] },
+          { "item": "snacks", "chance": 60, "repeat": [ 2, 10 ] },
           { "item": "fridgesnacks", "chance": 60, "repeat": [ 2, 10 ] }
         ],
         "l": [
-          { "item": "guns_pistol_rare", "chance": 50, "repeat": [ 1, 2 ] },
-          { "item": "mags_pistol_rare", "chance": 60, "repeat": 5 },
-          { "item": "ammo_pistol_rare", "chance": 60, "repeat": [ 5, 10 ] }
+          { "item": "guns_pistol_rare", "chance": 10, "repeat": [ 1, 2 ] },
+          { "item": "mags_pistol_rare", "chance": 20, "repeat": 5 },
+          { "item": "ammo_pistol_rare", "chance": 20, "repeat": [ 5, 10 ] }
         ]
       },
       "monsters": { "s": { "monster": "GROUP_LAB_SECURITY", "chance": 50 }, ".": { "monster": "GROUP_LAB_SECURITY", "chance": 15 } }

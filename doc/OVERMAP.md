@@ -64,12 +64,12 @@ In this example snippet of an overmap, each character corresponds one entry in t
 references a given overmap terrain:
 
 ```
-..........FFF│FF
-.v>│<...FFFFF│FF
-──>│<...FFFFF│FF
+.v>│......FFF│FF
+──>│<....FFFF│FF
 <.>│<...FFFFF│FF
 O.v│vv.vvv┌──┘FF
 ───┼──────┘.FFFF
+F^^|^^^.^..F.FFF
 ```
 
 So for example, the `F` is a forest which has a definition like this:
@@ -79,19 +79,19 @@ So for example, the `F` is a forest which has a definition like this:
     "type": "overmap_terrain",
     "id": "forest",
     "name": "forest",
-    "sym": 70,
+    "sym": "F",
     "color": "green"
 }
 ```
 
-and the `v` is a house which has a definition like this:
+and the `^` is a house which has a definition like this:
 
 ```json
 {
     "type": "overmap_terrain",
     "id": "house",
     "name": "house",
-    "sym": 94,
+    "sym": "^",
     "color": "light_green"
 }
 ```
@@ -106,7 +106,7 @@ The next important concept for the overmap is that of the **overmap_special** an
 **city_building**. These types, which are similar in structure, are the mechanism by which multiple
 overmap terrains can be collected together into one conceptual entity for placement on the overmap.
 If you wanted to have a sprawling mansion, a two story house, a large pond, or a secret lair placed
-under an unassuming bookstore, you would need to use an **overmap_special** or a **city_building**. 
+under an unassuming bookstore, you would need to use an **overmap_special** or a **city_building**.
 
 These types are effectively a list of the overmap terrains that compose them, the placement of
 those overmap terrains relative to each other, and some data used to drive the placement of the
@@ -117,7 +117,7 @@ be placed in a forest/field/river, etc).
 
 Speaking of roads, the concept of linear features like roads, sewers, subways, railroads, and
 forest trails are managed through a combination of overmap terrain attributes and another type
-called an **overmap_connection**. 
+called an **overmap_connection**.
 
 An overmap connection effectively defines the types of overmap terrain on which a given connection
 can be made, the "cost" to make that connection, and the type of terrain to be placed when making
@@ -136,7 +136,7 @@ We've previously mentioned defining valid overmap terrain types for the placemen
 city buildings, and overmap connections, but one thing to clarify is these actually leverage another
 type called an **overmap_location** rather than referencing **overmap_terrain** values directly.
 
-Simply put, an **overmap_location** is just a named collection of **overmap_terrain** values. 
+Simply put, an **overmap_location** is just a named collection of **overmap_terrain** values.
 
 For example, here are two simple definitions.
 
@@ -145,7 +145,7 @@ For example, here are two simple definitions.
     "type": "overmap_location",
     "id": "forest",
     "terrains": ["forest"]
-}, 
+},
 {
     "type": "overmap_location",
     "id": "wilderness",
@@ -180,10 +180,10 @@ update these definitions as follows:
 ### Rotation
 
 If an overmap terrain can be rotated (i.e. it does not have the `NO_ROTATE` flag), then when
-the game loads the definition from JSON, it will create the rotated definitions automatically, 
+the game loads the definition from JSON, it will create the rotated definitions automatically,
 suffixing the `id` defined here with `_north`, `_east`, `_south` or `_west`. This will be
 particularly relevant if the overmap terrains are used in **overmap_special** or **city_building**
-definitions, because if those are allowed to rotate, it's desirable to specify a particular 
+definitions, because if those are allowed to rotate, it's desirable to specify a particular
 rotation for the referenced overmap terrains (e.g. the `_north` version for all).
 
 ### Fields
@@ -193,13 +193,14 @@ rotation for the referenced overmap terrains (e.g. the `_north` version for all)
 | `type`            | Must be "overmap_terrain".                                                                       |
 | `id`              | Unique id.                                                                                       |
 | `name`            | Name for the location shown in game.                                                             |
-| `sym`             | Symbol used when drawing the location. ASCII (e.g. F is 70) plus some specials for line drawing. |
-| `color`           | Color to draw the symbol in. See COLOR.md.                                                       |
+| `sym`             | Symbol used when drawing the location, like `"F"` (or you may use an ASCII value like `70`).     |
+| `color`           | Color to draw the symbol in. See [COLOR.md](COLOR.md).                                           |
 | `see_cost`        | Affects player vision on overmap. Higher values obstruct vision more.                            |
+| `travel_cost`     | Affects pathfinding cost. Higher values are harder to travel through (reference: Forest = 10 )   |
 | `extras`          | Reference to a named `map_extras` in region_settings, defines which map extras can be applied.   |
 | `mondensity`      | Summed with values for adjacent overmap terrains to influence density of monsters spawned here.  |
 | `spawns`          | Spawns added once at mapgen. Monster group, % chance, population range (min/max).                |
-| `flags`           | See `Overmap terrains` in JSON_FLAGS.md.                                                         |
+| `flags`           | See `Overmap terrains` in [JSON_FLAGS.md](JSON_FLAGS.md).                                        |
 | `mapgen`          | Specify a C++ mapgen function. Don't do this--use JSON.                                          |
 | `mapgen_straight` | Specify a C++ mapgen function for a LINEAR feature variation.                                    |
 | `mapgen_curved`   | Specify a C++ mapgen function for a LINEAR feature variation.                                    |
@@ -217,7 +218,7 @@ an exhaustive example...
     "type": "overmap_terrain",
     "id": "field",
     "name": "field",
-    "sym": 46,
+    "sym": ".",
     "color": "brown",
     "see_cost": 2,
     "extras": "field",
@@ -253,12 +254,22 @@ minimum should be 0.
 
 ### Rotation
 
-In general, it is desirable to define your overmap special as allowing rotation--this will provide 
-variety in the game world and allow for more possible valid locations when attempting to place the 
+In general, it is desirable to define your overmap special as allowing rotation--this will provide
+variety in the game world and allow for more possible valid locations when attempting to place the
 overmap special. A consequence of the relationship between rotating an overmap special and rotating
 the underlying overmap terrains that make up the special is that the overmap special should reference
 a specific rotated version of the associated overmap terrain--generally, this is the `_north` rotation
 as it corresponds to the way in which the JSON for mapgen is defined.
+
+### Locations
+
+The overmap special has two mechanisms for specifying the valid locations (`overmap_location`) that
+it may be placed on. Each individual entry in `overmaps` may have the valid locations specified,
+which is useful if different parts of a special are allowed on different types of terrain (e.g. a
+dock that should have one part on the shore and one part in the water). If all values are the same,
+locations may instead be specified for the entire special using the top level `locations` key, The
+value for an individual entry takes precedence over the top level value, so you may define the top
+level value and then only specify it for individual entries that differ.
 
 ### Fields
 
@@ -266,13 +277,13 @@ as it corresponds to the way in which the JSON for mapgen is defined.
 | --------------- | ----------------------------------------------------------------------------------------------------- |
 | `type`          | Must be "overmap_special".                                                                            |
 | `id`            | Unique id.                                                                                            |
-| `overmaps`      | List of overmap terrains and their relative location within the special. Location is [ x, y, z ].     |
-| `connections`   | List of overmap connections and their relative location within the special. Location is [ x, y, z ].  |
+| `overmaps`      | List of overmap terrains and their relative `[ x, y, z ]` location within the special.                |
+| `connections`   | List of overmap connections and their relative `[ x, y, z ]` location within the special.             |
 | `locations`     | List of `overmap_location` ids that the special may be placed on.                                     |
 | `city_distance` | Min/max distance from a city that the special may be placed. Use -1 for unbounded.                    |
 | `city_sizes`    | Min/max city size for a city that the special may be placed near. Use -1 for unbounded.               |
 | `occurrences`   | Min/max number of occurrences when placing the special. If UNIQUE flag is set, becomes X of Y chance. |
-| `flags`         | See `Overmap specials` in JSON_FLAGS.md.                                                              |
+| `flags`         | See `Overmap specials` in [JSON_FLAGS.md](JSON_FLAGS.md).                                             |
 | `rotate`        | Whether the special can rotate. True if not specified.                                                |
 
 ### Example
@@ -283,7 +294,7 @@ as it corresponds to the way in which the JSON for mapgen is defined.
     "type": "overmap_special",
     "id": "campground",
     "overmaps": [
-      { "point": [ 0, 0, 0 ], "overmap": "campground_1a_north" },
+      { "point": [ 0, 0, 0 ], "overmap": "campground_1a_north", "locations": [ "forest_edge" ] },
       { "point": [ 1, 0, 0 ], "overmap": "campground_1b_north" },
       { "point": [ 0, 1, 0 ], "overmap": "campground_2a_north" },
       { "point": [ 1, 1, 0 ], "overmap": "campground_2b_north" }
@@ -299,14 +310,22 @@ as it corresponds to the way in which the JSON for mapgen is defined.
 ]
 ```
 
+### Overmaps
+
+| Identifier  |                                Description                                 |
+| ----------- | -------------------------------------------------------------------------- |
+| `point`     | `[ x, y, z]` of the overmap terrain within the special.                    |
+| `overmap`   | Id of the `overmap_terrain` to place at the location.                      |
+| `locations` | List of `overmap_location` ids that this overmap terrain may be placed on. |
+
 ### Connections
 
-|  Identifier  |                                           Description                                            |
-| ------------ | ------------------------------------------------------------------------------------------------ |
-| `point`      | [ x, y, z] of the connection end point. Cannot overlap an overmap terrain entry for the special. |
-| `terrain`    | Will go away in favor of `connection` eventually. Use `road`, `subway`, `sewer`, etc.            |
-| `connection` | Id of the `overmap_connection` to build. Optional for now, but you should specify it explicitly. |
-| `from`       | Optional point [ x, y, z] within the special to treat as the origin of the connection.           |
+|  Identifier  |                                           Description                                              |
+| ------------ | -------------------------------------------------------------------------------------------------- |
+| `point`      | `[ x, y, z]` of the connection end point. Cannot overlap an overmap terrain entry for the special. |
+| `terrain`    | Will go away in favor of `connection` eventually. Use `road`, `subway`, `sewer`, etc.              |
+| `connection` | Id of the `overmap_connection` to build. Optional for now, but you should specify it explicitly.   |
+| `from`       | Optional point `[ x, y, z]` within the special to treat as the origin of the connection.           |
 
 ## City Building
 
@@ -319,7 +338,7 @@ of that for an overmap special, and consequently will not be repeated in detail 
 City buildings are not subject to the same quantity limitations as overmap specials, and in fact
 the occurrences attribute does not apply at all. Instead, the placement of city buildings is driven
 by the frequency assigned to the city building within the `region_settings`. Consult
-REGION_SETTINGS.md for more details.
+[REGION_SETTINGS.md](REGION_SETTINGS.md) for more details.
 
 ### Fields
 
@@ -399,7 +418,7 @@ REGION_SETTINGS.md for more details.
 | `terrain`    | `overmap_terrain` to be placed when the placement location matches `locations`.                            |
 | `locations`  | List of `overmap_location` that this subtype applies to. Can be empty; signifies `terrain` is valid as is. |
 | `basic_cost` | Cost of this subtype when pathfinding a route. Default 0.                                                  |
-| `flags`      | See `Overmap connections` in JSON_FLAGS.md.                                                                |
+| `flags`      | See `Overmap connections` in [JSON_FLAGS.md](JSON_FLAGS.md).                                               |
 
 ## Overmap Location
 

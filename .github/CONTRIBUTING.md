@@ -1,6 +1,6 @@
 # Contribute
 
-**Opening new issue?** Please read [ISSUES.md](https://github.com/CleverRaven/Cataclysm-DDA/blob/master/ISSUES.md) first.
+**Opening new issue?** Please read [ISSUES.md](../ISSUES.md) first.
 
 Contributing to Cataclysm: Dark Days Ahead is easy — simply fork the repository here on GitHub, make your changes, and then send us a pull request.
 
@@ -18,7 +18,8 @@ There are a couple of guidelines we suggest sticking to:
 
 ## Code Style
 
-Current policy is to only update code to the standard style when changing a substantial portion of it, but **please** do this in a separate commit. See [CODE_STYLE](../doc/CODE_STYLE.md) for details.
+Code style is enforced across the codebase by `astyle`.
+See [CODE_STYLE](../doc/CODE_STYLE.md) for details.
 
 ## Translations
 
@@ -64,9 +65,9 @@ int foo;
 ```
 
 Helpful pages:
-http://www.stack.nl/~dimitri/doxygen/manual/commands.html
-http://www.stack.nl/~dimitri/doxygen/manual/markdown.html#markdown_std
-http://www.stack.nl/~dimitri/doxygen/manual/faq.html
+* [Doxygen Manual - Special Commands](https://www.doxygen.nl/manual/commands.html)
+* [Doxygen Manual - Standard Markdown](https://www.doxygen.nl/manual/markdown.html#markdown_std)
+* [Doxygen Manual - Frequently Asked Questions](https://www.doxygen.nl/manual/faq.html)
 
 ### Guidelines for adding documentation
 * Doxygen comments should describe behavior towards the outside, not implementation, but since many classes in Cataclysm are intertwined, it's often necessary to describe implementation.
@@ -149,8 +150,10 @@ If you are also looking for suggestions then mark it with [CR] — "comments req
 
 This can help speed up our review process by allowing us to only review the things that are ready for it, and will prevent anything that isn't completely ready from being merged in.
 
+It is not required to solve or reference an open issue to file a PR, however, if you do so, you need to explain the problem your PR is solving in full detail.
+
 ### All PRs should have a "Summary" line
-Summary is a one-line description of your change that will be extracted and added to the project changelog at https://github.com/CleverRaven/Cataclysm-DDA/blob/master/data/changelog.txt
+Summary is a one-line description of your change that will be extracted and added to [the project changelog](../data/changelog.txt).
 
 The format is: ```SUMMARY: Category "description"```
 
@@ -160,7 +163,7 @@ Example: ```SUMMARY: Content "Adds new mutation category 'Mouse'"```
 Or, if you want it treated as a minor tweak that doesn't appear in the changelog:
 ```SUMMARY: None```
 
-See the Changelog Guidelines at https://github.com/CleverRaven/Cataclysm-DDA/blob/master/doc/CHANGELOG_GUIDELINES.md for explanations of the categories.
+See [the Changelog Guidelines](../doc/CHANGELOG_GUIDELINES.md) for explanations of the categories.
 
 ### Closing issues using keywords
 
@@ -230,9 +233,8 @@ You can also set the tracking information at the same time as creating the branc
 
 There is a suite of tests built into the source tree at tests/  
 You should run the test suite after ANY change to the game source.  
-An ordinary invocation of ``make`` will build the test executable at tests/cata_test, and it can be invoked like any ordinary executable.  
-With no arguments it will run the entire test suite.  
-With ``--help`` it will print a number of invocation options you can use to adjust its operation.
+An ordinary invocation of `make` will build the test executable at tests/cata_test, and it can be invoked like any ordinary executable, or via `make check`.
+Running `test/cata_test` with no arguments will run the entire test suite; running it with `--help` will print a number of invocation options you can use to adjust its operation.
 
     $ make
     ... compilation details ...
@@ -243,7 +245,9 @@ With ``--help`` it will print a number of invocation options you can use to adju
     Ended test at Fri Nov  9 04:37:45 2018
     The test took 41.772 seconds
 
-I recommend habitually invoking make like ``make YOUR BUILD OPTIONS && tests/cata_test``.
+I recommend habitually invoking make like ``make YOUR BUILD OPTIONS && make check``.
+
+If you're working with Visual Studio (and don't have `make`), see [Visual Studio-specific advice](../doc/COMPILING/COMPILING-VS-VCPKG.md#running-unit-tests).
 
 ## In-game testing, test environment and the debug menu
 
@@ -252,39 +256,16 @@ Whether you are implementing a new feature or whether you are fixing a bug, it i
 Bring up the keybindings menu (press `Escape` then `1`), scroll down almost to the bottom and press `+` to add a new key binding. Press the letter that corresponds to the *Debug menu* item, then press the key you want to use to bring up the debug menu. To test your changes, create a new world with a new character. Once you are in that world, press the key you just assigned for the debug menu and you should see something like this:
 
 ```
-┌────────────────────────────────────────────┐
-│ Debug Functions - Using these is CHEATING! │
-├────────────────────────────────────────────┤
-│ 1 Wish for an item                         │
-│ 2 Teleport - Short Range                   │
-│ 3 Teleport - Long Range                    │
-│ 4 Reveal map                               │
-│ 5 Spawn NPC                                │
-│ 6 Spawn Monster                            │
-│ 7 Check game state...                      │
-│ 8 Kill NPCs                                │
-│ 9 Mutate                                   │
-│ 0 Spawn a vehicle                          │
-│ a Change all skills                        │
-│ b Learn all melee styles                   │
-│ c Unlock all recipes                       │
-│ d Edit player/NPC                          │
-│ e Spawn Artifact                           │
-│ f Spawn Clairvoyance Artifact              │
-│ g Map editor                               │
-│ h Change weather                           │
-│ i Remove all monsters                      │
-│ j Display hordes                           │
-│ k Test Item Group                          │
-│ l Damage Self                              │
-│ m Show Sound Clustering                    │
-│ n Lua Command                              │
-│ o Display weather                          │
-│ p Change time                              │
-│ q Set automove route                       │
-│ r Show mutation category levels            │
-│ s Cancel                                   │
-└────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│ Debug Functions - Using these will cheat not only the game, but yourself. │
+├───────────────────────────────────────────────────────────────────────────┤
+│ i Info                                                                    │
+│ Q Quit to main menu                                                       │
+│ s Spawning…                                                               │
+│ p Player…                                                                 │
+│ t Teleport…                                                               │
+│ m Map…                                                                    │
+└───────────────────────────────────────────────────────────────────────────┘
 ```
 
 With these commands, you should be able to recreate the proper conditions to test your changes. You can find some more information about the debug menu on [the official wiki](http://cddawiki.chezzo.com/cdda_wiki/index.php).
@@ -310,3 +291,5 @@ Now that `master` has been cleaned up, we can easily pull from `upstream/master`
     $ git pull --ff-only upstream master
     # gets changes from the "upstream" remote for the matching branch, in this case "master"
     $ git checkout new_branch
+
+For more frequently asked questions, see the [developer FAQ](../doc/DEVELOPER_FAQ.md).
